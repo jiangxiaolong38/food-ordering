@@ -8,12 +8,8 @@ function api(method, path, body) {
         url += sep + '_method=' + method;
         method = 'POST';
     }
-    var opts = { method: method, headers: {
-        'apikey': 'sb_publishable_aK-yvjqXxVe4DS5Gr6X8iA_IO_LZuKX',
-        'Authorization': 'Bearer sb_publishable_aK-yvjqXxVe4DS5Gr6X8iA_IO_LZuKX',
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-    }};
+    var opts = { method: method, headers: {} };
+    if (body) opts.headers['Content-Type'] = 'text/plain';
     if (body) opts.body = JSON.stringify(body);
     return fetch(url, opts).then(function(r) { return r.json(); });
 }
