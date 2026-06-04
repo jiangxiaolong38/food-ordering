@@ -3,36 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>早餐采购系统</title>
+    <title>鏃╅閲囪喘绯荤粺</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="header">
         <div class="header-inner">
-            <h1>早餐采购系统</h1>
+            <h1>鏃╅閲囪喘绯荤粺</h1>
             <nav class="nav-tabs">
-                <button class="nav-tab active" data-view="order">填报</button>
-                <button class="nav-tab" data-view="history">查询</button>
-                <button class="nav-tab" data-view="admin">管理</button>
+                <button class="nav-tab active" data-view="order">濉姤</button>
+                <button class="nav-tab" data-view="history">鏌ヨ</button>
+                <button class="nav-tab" data-view="admin">绠＄悊</button>
             </nav>
         </div>
     </header>
 
     <div id="view-order" class="view">
         <section class="batch-info" id="batchInfo">
-            <div class="batch-status" id="batchStatus">加载中...</div>
+            <div class="batch-status" id="batchStatus">鍔犺浇涓?..</div>
             <div class="batch-meta">
                 <span id="batchLabel">--</span>
                 <span class="sep">|</span>
-                <span>限额 <strong id="batchLimit">--</strong></span>
+                <span>闄愰 <strong id="batchLimit">--</strong></span>
                 <span class="sep">|</span>
-                <span>已用 <strong id="batchUsed">--</strong></span>
+                <span>宸茬敤 <strong id="batchUsed">--</strong></span>
             </div>
         </section>
 
         <div class="name-bar">
-            <label>选择姓名</label>
-            <input type="text" id="orderName" list="nameList" placeholder="输入姓名..." autocomplete="off">
+            <label>閫夋嫨濮撳悕</label>
+            <input type="text" id="orderName" list="nameList" placeholder="杈撳叆濮撳悕..." autocomplete="off">
             <datalist id="nameList"></datalist>
         </div>
 
@@ -41,32 +41,32 @@
         <div class="food-grid" id="foodGrid"></div>
 
         <div class="order-actions" id="orderActions">
-            <span class="budget-label" id="budgetLabel">剩余预算: --</span>
-            <button class="btn btn-submit" id="submitBtn" disabled>提交订单</button>
+            <span class="budget-label" id="budgetLabel">鍓╀綑棰勭畻: --</span>
+            <button class="btn btn-submit" id="submitBtn" disabled>鎻愪氦璁㈠崟</button>
         </div>
     </div>
 
     <div id="view-history" class="view hidden">
         <div class="name-bar">
-            <label>查询姓名</label>
-            <input type="text" id="historyName" list="nameList2" placeholder="输入姓名..." autocomplete="off">
+            <label>鏌ヨ濮撳悕</label>
+            <input type="text" id="historyName" list="nameList2" placeholder="杈撳叆濮撳悕..." autocomplete="off">
             <datalist id="nameList2"></datalist>
         </div>
-        <div id="historyContent" class="history-content">请选择姓名查看历史订单</div>
+        <div id="historyContent" class="history-content">璇烽€夋嫨濮撳悕鏌ョ湅鍘嗗彶璁㈠崟</div>
     </div>
 
     <div id="view-admin" class="view hidden">
         <div class="admin-gate" id="adminGate">
-            <h2>管理员登录</h2>
-            <input type="password" id="adminPassword" placeholder="请输入管理密码">
-            <button class="btn" id="adminLoginBtn">进入</button>
+            <h2>绠＄悊鍛樼櫥褰?/h2>
+            <input type="password" id="adminPassword" placeholder="璇疯緭鍏ョ鐞嗗瘑鐮?>
+            <button class="btn" id="adminLoginBtn">杩涘叆</button>
             <p class="error-msg" id="adminError"></p>
         </div>
         <div class="admin-panel hidden" id="adminPanel">
             <div class="admin-tabs">
-                <button class="admin-tab active" data-admin="food">食品管理</button>
-                <button class="admin-tab" data-admin="batch">批次管理</button>
-                <button class="admin-tab" data-admin="summary">采购汇总</button>
+                <button class="admin-tab active" data-admin="food">椋熷搧绠＄悊</button>
+                <button class="admin-tab" data-admin="batch">鎵规绠＄悊</button>
+                <button class="admin-tab" data-admin="summary">閲囪喘姹囨€?/button>
             </div>
             <div id="adminFood" class="admin-section"></div>
             <div id="adminBatch" class="admin-section hidden"></div>
@@ -74,7 +74,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script src="supabase.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
