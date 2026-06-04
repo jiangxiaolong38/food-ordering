@@ -2,72 +2,70 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>鏃╅閲囪喘绯荤粺</title>
+    <title>&#26089;&#39184;&#37319;&#36141;&#31995;&#32479;</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="header">
         <div class="header-inner">
-            <h1>鏃╅閲囪喘绯荤粺</h1>
+            <h1>&#26089;&#39184;&#37319;&#36141;&#31995;&#32479;</h1>
             <nav class="nav-tabs">
-                <button class="nav-tab active" data-view="order">濉姤</button>
-                <button class="nav-tab" data-view="history">鏌ヨ</button>
-                <button class="nav-tab" data-view="admin">绠＄悊</button>
+                <button class="nav-tab active" data-view="order">&#22635;&#25253;</button>
+                <button class="nav-tab" data-view="history">&#26597;&#35810;</button>
+                <button class="nav-tab" data-view="admin">&#31649;&#29702;</button>
             </nav>
         </div>
     </header>
 
     <div id="view-order" class="view">
         <section class="batch-info" id="batchInfo">
-            <div class="batch-status" id="batchStatus">鍔犺浇涓?..</div>
+            <div class="batch-status" id="batchStatus">&#21152;&#36733;&#20013;...</div>
             <div class="batch-meta">
                 <span id="batchLabel">--</span>
                 <span class="sep">|</span>
-                <span>闄愰 <strong id="batchLimit">--</strong></span>
+                <span>&#38480;&#39069; <strong id="batchLimit">--</strong></span>
                 <span class="sep">|</span>
-                <span>宸茬敤 <strong id="batchUsed">--</strong></span>
+                <span>&#24050;&#29992; <strong id="batchUsed">--</strong></span>
             </div>
         </section>
 
         <div class="name-bar">
-            <label>閫夋嫨濮撳悕</label>
-            <input type="text" id="orderName" list="nameList" placeholder="杈撳叆濮撳悕..." autocomplete="off">
+            <label>&#36873;&#25321;&#22995;&#21517;</label>
+            <input type="text" id="orderName" list="nameList" placeholder="&#36755;&#20837;&#22995;&#21517;..." autocomplete="off">
             <datalist id="nameList"></datalist>
         </div>
 
         <div class="status-bar" id="statusBar"></div>
-
         <div class="food-grid" id="foodGrid"></div>
 
         <div class="order-actions" id="orderActions">
-            <span class="budget-label" id="budgetLabel">鍓╀綑棰勭畻: --</span>
-            <button class="btn btn-submit" id="submitBtn" disabled>鎻愪氦璁㈠崟</button>
+            <span class="budget-label" id="budgetLabel">&#21097;&#20313;&#39044;&#31639;: --</span>
+            <button class="btn btn-submit" id="submitBtn" disabled>&#25552;&#20132;&#35746;&#21333;</button>
         </div>
     </div>
 
     <div id="view-history" class="view hidden">
         <div class="name-bar">
-            <label>鏌ヨ濮撳悕</label>
-            <input type="text" id="historyName" list="nameList2" placeholder="杈撳叆濮撳悕..." autocomplete="off">
+            <label>&#26597;&#35810;&#22995;&#21517;</label>
+            <input type="text" id="historyName" list="nameList2" placeholder="&#36755;&#20837;&#22995;&#21517;..." autocomplete="off">
             <datalist id="nameList2"></datalist>
         </div>
-        <div id="historyContent" class="history-content">璇烽€夋嫨濮撳悕鏌ョ湅鍘嗗彶璁㈠崟</div>
+        <div id="historyContent" class="history-content">&#35831;&#36873;&#25321;&#22995;&#21517;&#26597;&#30475;&#21382;&#21490;&#35746;&#21333;</div>
     </div>
 
     <div id="view-admin" class="view hidden">
         <div class="admin-gate" id="adminGate">
-            <h2>绠＄悊鍛樼櫥褰?/h2>
-            <input type="password" id="adminPassword" placeholder="璇疯緭鍏ョ鐞嗗瘑鐮?>
-            <button class="btn" id="adminLoginBtn">杩涘叆</button>
+            <h2>&#31649;&#29702;&#21592;&#30331;&#24405;</h2>
+            <input type="password" id="adminPassword" placeholder="&#35831;&#36755;&#20837;&#31649;&#29702;&#23494;&#30721;">
+            <button class="btn" id="adminLoginBtn">&#36827;&#20837;</button>
             <p class="error-msg" id="adminError"></p>
         </div>
         <div class="admin-panel hidden" id="adminPanel">
             <div class="admin-tabs">
-                <button class="admin-tab active" data-admin="food">椋熷搧绠＄悊</button>
-                <button class="admin-tab" data-admin="batch">鎵规绠＄悊</button>
-                <button class="admin-tab" data-admin="summary">閲囪喘姹囨€?/button>
+                <button class="admin-tab active" data-admin="food">&#39135;&#21697;&#31649;&#29702;</button>
+                <button class="admin-tab" data-admin="batch">&#25209;&#27425;&#31649;&#29702;</button>
+                <button class="admin-tab" data-admin="summary">&#37319;&#36141;&#27719;&#24635;</button>
             </div>
             <div id="adminFood" class="admin-section"></div>
             <div id="adminBatch" class="admin-section hidden"></div>
