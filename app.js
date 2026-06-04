@@ -1,6 +1,17 @@
-const SUPABASE_URL = 'https://hynxlbnaudtxxawcswvj.supabase.co';
+const SUPABASE_URL = 'https://script.google.com/macros/s/AKfycbzINGhDULglaaOaoZn4Vfzmlgr7buHprm0l6GKQbAE77SBrgzawRV4pYJCMbFXgaEt9/exec';
 const SUPABASE_KEY = 'sb_publishable_aK-yvjqXxVe4DS5Gr6X8iA_IO_LZuKX';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const _realFetch = window.fetch;
+const customFetch = function(url, options) {
+    url = url.toString();
+    options = options || {};
+    if ((options.method === 'PATCH' || options.method === 'DELETE') && url.includes('supabase.co')) {
+        options.method = 'POST';
+        options.headers = options.headers || {};
+        options.headers['X-HTTP-Method-Override'] = options.method === 'PATCH' ? 'PATCH' : 'DELETE';
+    }
+    return _realFetch(url, options);
+};const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { global: { fetch: customFetch } });
 
 let currentUser = null;
 let currentBatch = null;
@@ -57,16 +68,16 @@ async function loadCurrentBatch() {
         if (error) throw error;
         if (data && data.length > 0) {
             currentBatch = data[0];
-            const typeLabel = currentBatch.batch_type === 'wednesday' ? '周三批次' : '周六批次';
-            document.getElementById('batchStatus').textContent = typeLabel + ' · 填报进行中';
+            const typeLabel = currentBatch.batch_type === 'wednesday' ? '鍛ㄤ笁鎵规' : '鍛ㄥ叚鎵规';
+            document.getElementById('batchStatus').textContent = typeLabel + ' 路 濉姤杩涜涓?;
             document.getElementById('batchStatus').className = 'batch-status open';
             document.getElementById('batchLabel').textContent = typeLabel;
-            document.getElementById('batchLimit').textContent = currentBatch.limit_amount.toFixed(0) + ' ₽';
+            document.getElementById('batchLimit').textContent = currentBatch.limit_amount.toFixed(0) + ' 鈧?;
             document.getElementById('orderActions').style.display = 'flex';
             document.getElementById('statusBar').textContent = '';
         } else {
             currentBatch = null;
-            document.getElementById('batchStatus').textContent = '当前没有开放的采购批次';
+            document.getElementById('batchStatus').textContent = '褰撳墠娌℃湁寮€鏀剧殑閲囪喘鎵规';
             document.getElementById('batchStatus').className = 'batch-status closed';
             document.getElementById('batchLabel').textContent = '--';
             document.getElementById('batchLimit').textContent = '--';
@@ -76,15 +87,15 @@ async function loadCurrentBatch() {
         }
     } catch(e) {
         console.error(e);
-        document.getElementById('batchStatus').textContent = '加载失败: ' + e.message;
+        document.getElementById('batchStatus').textContent = '鍔犺浇澶辫触: ' + e.message;
     }
 }
 
 async function loadFoodGrid() {
     const grid = document.getElementById('foodGrid');
-    grid.innerHTML = '<div class="loading">加载食品列表...</div>';
+    grid.innerHTML = '<div class="loading">鍔犺浇椋熷搧鍒楄〃...</div>';
     const { data, error } = await supabase.from('food_items').select('*').order('sort_order');
-    if (error) { grid.innerHTML = '<div class="loading">加载失败</div>'; return; }
+    if (error) { grid.innerHTML = '<div class="loading">鍔犺浇澶辫触</div>'; return; }
     const foodItems = data || [];
     let html = '';
     const categories = [...new Set(foodItems.map(f => f.category))];
@@ -123,11 +134,11 @@ function recalcBudget() {
     document.getElementById('batchUsed').textContent = total.toFixed(2) + ' Rub';
     const remaining = currentBatch.limit_amount - total;
     const label = document.getElementById('budgetLabel');
-    label.textContent = '剩余预算: ' + remaining.toFixed(2) + ' Rub';
+    label.textContent = '鍓╀綑棰勭畻: ' + remaining.toFixed(2) + ' Rub';
     label.className = remaining < 0 ? 'budget-label over' : 'budget-label';
     document.getElementById('submitBtn').disabled = !currentUser;
     if (remaining < 0) {
-        document.getElementById('statusBar').textContent = '已超出限额，请减少数量';
+        document.getElementById('statusBar').textContent = '宸茶秴鍑洪檺棰濓紝璇峰噺灏戞暟閲?;
         document.getElementById('statusBar').style.color = 'var(--red)';
     } else {
         document.getElementById('statusBar').textContent = '';
@@ -151,7 +162,7 @@ document.getElementById('orderName').addEventListener('input', async function() 
 });
 
 document.getElementById('submitBtn').addEventListener('click', async () => {
-    if (!currentBatch || !currentUser) return toast('请先选择姓名');
+    if (!currentBatch || !currentUser) return toast('璇峰厛閫夋嫨濮撳悕');
     let total = 0;
     const orders = [];
     document.querySelectorAll('.food-qty').forEach(input => {
@@ -159,26 +170,26 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
         total += qty * parseFloat(input.dataset.price);
         orders.push({ batch_id: currentBatch.id, user_id: currentUser.id, food_item_id: parseInt(input.dataset.id), quantity: qty });
     });
-    if (total > currentBatch.limit_amount) return toast('超出限额，请调整数量');
+    if (total > currentBatch.limit_amount) return toast('瓒呭嚭闄愰锛岃璋冩暣鏁伴噺');
     try {
         const upsertData = orders.map(o => ({ batch_id: o.batch_id, user_id: o.user_id, food_item_id: o.food_item_id, quantity: o.quantity }));
         const { error } = await supabase.from('orders').upsert(upsertData, { onConflict: 'batch_id, user_id, food_item_id' });
         if (error) throw error;
-        toast('订单已提交!');
-    } catch(e) { toast('提交失败: ' + e.message); }
+        toast('璁㈠崟宸叉彁浜?');
+    } catch(e) { toast('鎻愪氦澶辫触: ' + e.message); }
 });
 
 // ===== HISTORY VIEW =====
 function loadHistoryView() {
     updateNameDatalists();
-    document.getElementById('historyContent').innerHTML = '请选择姓名查看历史订单';
+    document.getElementById('historyContent').innerHTML = '璇烽€夋嫨濮撳悕鏌ョ湅鍘嗗彶璁㈠崟';
 }
 
 document.getElementById('historyName').addEventListener('input', async function() {
     const name = this.value.trim();
-    if (!name) { document.getElementById('historyContent').innerHTML = '请选择姓名查看历史订单'; return; }
+    if (!name) { document.getElementById('historyContent').innerHTML = '璇烽€夋嫨濮撳悕鏌ョ湅鍘嗗彶璁㈠崟'; return; }
     const { data: userData } = await supabase.from('users').select('id').eq('name', name).limit(1);
-    if (!userData || userData.length === 0) { document.getElementById('historyContent').innerHTML = '未找到该用户'; return; }
+    if (!userData || userData.length === 0) { document.getElementById('historyContent').innerHTML = '鏈壘鍒拌鐢ㄦ埛'; return; }
     const userId = userData[0].id;
     saveName(name); updateNameDatalists();
     const { data: batches } = await supabase.from('purchase_batches').select('*').order('order_date', { ascending: false });
@@ -189,19 +200,19 @@ document.getElementById('historyName').addEventListener('input', async function(
     batches.forEach(batch => {
         const batchOrders = orders.filter(o => o.batch_id === batch.id && o.quantity > 0);
         if (batchOrders.length === 0) return;
-        const typeLabel = batch.batch_type === 'wednesday' ? '周三' : '周六';
-        const statusLabel = batch.status === 'closed' ? '已截止' : (batch.status === 'open' ? '进行中' : '待开启');
+        const typeLabel = batch.batch_type === 'wednesday' ? '鍛ㄤ笁' : '鍛ㄥ叚';
+        const statusLabel = batch.status === 'closed' ? '宸叉埅姝? : (batch.status === 'open' ? '杩涜涓? : '寰呭紑鍚?);
         let batchTotal = 0;
-        html += '<div class="batch-section"><h3>' + batch.order_date + ' · ' + typeLabel + '批次 · ' + statusLabel + '</h3><table class="history-table"><tr><th>食品</th><th>单价</th><th>数量</th><th>小计</th></tr>';
+        html += '<div class="batch-section"><h3>' + batch.order_date + ' 路 ' + typeLabel + '鎵规 路 ' + statusLabel + '</h3><table class="history-table"><tr><th>椋熷搧</th><th>鍗曚环</th><th>鏁伴噺</th><th>灏忚</th></tr>';
         batchOrders.forEach(o => {
             const fi = o.food_items || {};
             const subtotal = (fi.price || 0) * o.quantity;
             batchTotal += subtotal;
             html += '<tr><td>' + (fi.name || '--') + '</td><td>' + Number(fi.price || 0).toFixed(2) + '</td><td>' + o.quantity + '</td><td>' + subtotal.toFixed(2) + '</td></tr>';
         });
-        html += '<tr class="total-row"><td colspan="3">合计</td><td>' + batchTotal.toFixed(2) + ' Rub</td></tr></table></div>';
+        html += '<tr class="total-row"><td colspan="3">鍚堣</td><td>' + batchTotal.toFixed(2) + ' Rub</td></tr></table></div>';
     });
-    document.getElementById('historyContent').innerHTML = html || '暂无订单记录';
+    document.getElementById('historyContent').innerHTML = html || '鏆傛棤璁㈠崟璁板綍';
 });
 
 // ===== ADMIN VIEW =====
@@ -216,9 +227,9 @@ function loadAdminView() {
 document.getElementById('adminLoginBtn').addEventListener('click', async () => {
     const pw = document.getElementById('adminPassword').value;
     const { data, error } = await supabase.from('settings').select('value').eq('key', 'admin_password').single();
-    if (error || !data) { document.getElementById('adminError').textContent = '验证失败'; document.getElementById('adminError').style.display = ''; return; }
+    if (error || !data) { document.getElementById('adminError').textContent = '楠岃瘉澶辫触'; document.getElementById('adminError').style.display = ''; return; }
     if (data.value === pw) { adminAuthed = true; showAdminPanel(); }
-    else { document.getElementById('adminError').textContent = '密码错误'; document.getElementById('adminError').style.display = ''; }
+    else { document.getElementById('adminError').textContent = '瀵嗙爜閿欒'; document.getElementById('adminError').style.display = ''; }
 });
 
 document.getElementById('adminPassword').addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('adminLoginBtn').click(); });
@@ -252,95 +263,95 @@ document.querySelectorAll('.admin-tab').forEach(btn => {
 async function loadAdminFood() {
     const section = document.getElementById('adminFood');
     const { data, error } = await supabase.from('food_items').select('*').order('sort_order');
-    if (error) { section.innerHTML = '加载失败'; return; }
-    let html = '<div class="inline-form"><input type="text" id="newFoodName" placeholder="食品名称"><input type="number" id="newFoodPrice" placeholder="价格" step="0.01" min="0"><input type="text" id="newFoodCat" placeholder="分类"><button class="btn btn-sm" id="addFoodBtn">添加</button></div>';
-    html += '<table class="admin-table"><tr><th>名称</th><th>价格</th><th>分类</th><th>状态</th><th>操作</th></tr>';
+    if (error) { section.innerHTML = '鍔犺浇澶辫触'; return; }
+    let html = '<div class="inline-form"><input type="text" id="newFoodName" placeholder="椋熷搧鍚嶇О"><input type="number" id="newFoodPrice" placeholder="浠锋牸" step="0.01" min="0"><input type="text" id="newFoodCat" placeholder="鍒嗙被"><button class="btn btn-sm" id="addFoodBtn">娣诲姞</button></div>';
+    html += '<table class="admin-table"><tr><th>鍚嶇О</th><th>浠锋牸</th><th>鍒嗙被</th><th>鐘舵€?/th><th>鎿嶄綔</th></tr>';
     (data || []).forEach(item => {
-        html += '<tr><td>' + item.name + '</td><td>' + Number(item.price).toFixed(2) + '</td><td>' + item.category + '</td><td>' + (item.active ? '上架' : '已暂停') + '</td><td><button class="btn btn-sm" onclick="toggleFood(' + item.id + ',' + item.active + ')">' + (item.active ? '暂停' : '上架') + '</button> <button class="btn btn-sm btn-danger" onclick="deleteFood(' + item.id + ')">删除</button></td></tr>';
+        html += '<tr><td>' + item.name + '</td><td>' + Number(item.price).toFixed(2) + '</td><td>' + item.category + '</td><td>' + (item.active ? '涓婃灦' : '宸叉殏鍋?) + '</td><td><button class="btn btn-sm" onclick="toggleFood(' + item.id + ',' + item.active + ')">' + (item.active ? '鏆傚仠' : '涓婃灦') + '</button> <button class="btn btn-sm btn-danger" onclick="deleteFood(' + item.id + ')">鍒犻櫎</button></td></tr>';
     });
     html += '</table>';
     section.innerHTML = html;
     document.getElementById('addFoodBtn').addEventListener('click', async () => {
         const name = document.getElementById('newFoodName').value.trim();
         const price = parseFloat(document.getElementById('newFoodPrice').value);
-        const cat = document.getElementById('newFoodCat').value.trim() || '其他';
-        if (!name || isNaN(price)) return toast('请填写名称和价格');
+        const cat = document.getElementById('newFoodCat').value.trim() || '鍏朵粬';
+        if (!name || isNaN(price)) return toast('璇峰～鍐欏悕绉板拰浠锋牸');
         const { data: all } = await supabase.from('food_items').select('sort_order').order('sort_order', { ascending: false }).limit(1);
         const nextOrder = (all && all.length > 0) ? all[0].sort_order + 1 : 1;
         await supabase.from('food_items').insert({ name, price, category: cat, sort_order: nextOrder });
-        toast('已添加'); loadAdminFood();
+        toast('宸叉坊鍔?); loadAdminFood();
     });
 }
 
 async function toggleFood(id, current) {
     await supabase.from('food_items').update({ active: !current }).eq('id', id);
-    toast(current ? '已暂停' : '已上架'); loadAdminFood();
+    toast(current ? '宸叉殏鍋? : '宸蹭笂鏋?); loadAdminFood();
 }
 
 async function deleteFood(id) {
-    if (!confirm('确定删除吗？')) return;
+    if (!confirm('纭畾鍒犻櫎鍚楋紵')) return;
     await supabase.from('food_items').delete().eq('id', id);
-    toast('已删除'); loadAdminFood();
+    toast('宸插垹闄?); loadAdminFood();
 }
 
 // === Admin: Batch ===
 async function loadAdminBatch() {
     const section = document.getElementById('adminBatch');
-    let html = '<div class="inline-form"><label>创建新批次:</label><select id="batchType"><option value="wednesday">周三 (450 Rub)</option><option value="saturday">周六 (600 Rub)</option></select><input type="date" id="batchDate"><button class="btn btn-sm" id="createBatchBtn">开启批次</button></div>';
-    html += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">开启后大家即可填报，采购日当天10:00前可手动截止</p>';
+    let html = '<div class="inline-form"><label>鍒涘缓鏂版壒娆?</label><select id="batchType"><option value="wednesday">鍛ㄤ笁 (450 Rub)</option><option value="saturday">鍛ㄥ叚 (600 Rub)</option></select><input type="date" id="batchDate"><button class="btn btn-sm" id="createBatchBtn">寮€鍚壒娆?/button></div>';
+    html += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">寮€鍚悗澶у鍗冲彲濉姤锛岄噰璐棩褰撳ぉ10:00鍓嶅彲鎵嬪姩鎴</p>';
     const { data } = await supabase.from('purchase_batches').select('*').order('created_at', { ascending: false }).limit(20);
-    html += '<table class="admin-table"><tr><th>日期</th><th>类型</th><th>限额</th><th>状态</th><th>操作</th></tr>';
+    html += '<table class="admin-table"><tr><th>鏃ユ湡</th><th>绫诲瀷</th><th>闄愰</th><th>鐘舵€?/th><th>鎿嶄綔</th></tr>';
     (data || []).forEach(b => {
-        const typeLabel = b.batch_type === 'wednesday' ? '周三' : '周六';
-        const statusLabel = b.status === 'open' ? '进行中' : (b.status === 'closed' ? '已截止' : '待开启');
-        html += '<tr><td>' + b.order_date + '</td><td>' + typeLabel + '</td><td>' + Number(b.limit_amount).toFixed(0) + '</td><td>' + statusLabel + '</td><td>' + (b.status === 'open' ? '<button class="btn btn-sm btn-warn" onclick="closeBatch(' + b.id + ')">截止</button>' : '--') + '</td></tr>';
+        const typeLabel = b.batch_type === 'wednesday' ? '鍛ㄤ笁' : '鍛ㄥ叚';
+        const statusLabel = b.status === 'open' ? '杩涜涓? : (b.status === 'closed' ? '宸叉埅姝? : '寰呭紑鍚?);
+        html += '<tr><td>' + b.order_date + '</td><td>' + typeLabel + '</td><td>' + Number(b.limit_amount).toFixed(0) + '</td><td>' + statusLabel + '</td><td>' + (b.status === 'open' ? '<button class="btn btn-sm btn-warn" onclick="closeBatch(' + b.id + ')">鎴</button>' : '--') + '</td></tr>';
     });
     html += '</table>';
     section.innerHTML = html;
     document.getElementById('createBatchBtn').addEventListener('click', async () => {
         const type = document.getElementById('batchType').value;
         const date = document.getElementById('batchDate').value;
-        if (!date) return toast('请选择日期');
+        if (!date) return toast('璇烽€夋嫨鏃ユ湡');
         const limit = type === 'wednesday' ? 450 : 600;
         await supabase.from('purchase_batches').insert({ batch_type: type, limit_amount: limit, status: 'open', order_date: date });
-        toast('批次已开启'); loadAdminBatch();
+        toast('鎵规宸插紑鍚?); loadAdminBatch();
     });
 }
 
 async function closeBatch(id) {
-    if (!confirm('确定截止该批次吗？截止后大家无法继续填报。')) return;
+    if (!confirm('纭畾鎴璇ユ壒娆″悧锛熸埅姝㈠悗澶у鏃犳硶缁х画濉姤銆?)) return;
     await supabase.from('purchase_batches').update({ status: 'closed', closed_at: new Date().toISOString() }).eq('id', id);
-    toast('已截止'); loadAdminBatch();
+    toast('宸叉埅姝?); loadAdminBatch();
 }
 
 // === Admin: Summary ===
 async function loadAdminSummary() {
     const section = document.getElementById('adminSummary');
-    section.innerHTML = '<div class="loading">加载中...</div>';
+    section.innerHTML = '<div class="loading">鍔犺浇涓?..</div>';
     const { data: batches } = await supabase.from('purchase_batches').select('*').order('order_date', { ascending: false }).limit(20);
     const { data: orders } = await supabase.from('orders').select('*, users(name), food_items(name, price)');
-    if (!batches) { section.innerHTML = '加载失败'; return; }
+    if (!batches) { section.innerHTML = '鍔犺浇澶辫触'; return; }
     let html = '';
     batches.forEach(batch => {
         const batchOrders = (orders || []).filter(o => o.batch_id === batch.id && o.quantity > 0);
         if (batchOrders.length === 0) return;
-        const typeLabel = batch.batch_type === 'wednesday' ? '周三' : '周六';
-        html += '<div class="batch-section"><h3>' + batch.order_date + ' · ' + typeLabel + '批次</h3>';
+        const typeLabel = batch.batch_type === 'wednesday' ? '鍛ㄤ笁' : '鍛ㄥ叚';
+        html += '<div class="batch-section"><h3>' + batch.order_date + ' 路 ' + typeLabel + '鎵规</h3>';
         const byUser = {};
         batchOrders.forEach(o => {
-            const uname = (o.users || {}).name || '未知';
+            const uname = (o.users || {}).name || '鏈煡';
             if (!byUser[uname]) byUser[uname] = { items: [], total: 0 };
             byUser[uname].items.push(o);
             byUser[uname].total += (o.food_items || {}).price * o.quantity || 0;
         });
-        html += '<table class="admin-table"><tr><th>姓名</th><th>订单内容</th><th>合计</th></tr>';
+        html += '<table class="admin-table"><tr><th>濮撳悕</th><th>璁㈠崟鍐呭</th><th>鍚堣</th></tr>';
         Object.entries(byUser).forEach(([name, info]) => {
-            const orderText = info.items.map(o => (o.food_items || {}).name + ' x' + o.quantity).join('、');
+            const orderText = info.items.map(o => (o.food_items || {}).name + ' x' + o.quantity).join('銆?);
             html += '<tr><td>' + name + '</td><td>' + orderText + '</td><td>' + info.total.toFixed(2) + '</td></tr>';
         });
         html += '</table></div>';
     });
-    section.innerHTML = html || '暂无汇总数据';
+    section.innerHTML = html || '鏆傛棤姹囨€绘暟鎹?;
 }
 
 // ===== INIT =====
